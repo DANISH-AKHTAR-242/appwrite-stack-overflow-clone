@@ -12,14 +12,19 @@
     "@appwrite.io/pink-icons": "^1.0.0",
     "@tailwindcss/postcss": "^4.1.11",
     "appwrite": "^18.1.1",
-    "next": "15.4.3",
+    "next": "^15.5.4",
+    "node-appwrite": "^20.2.1",
     "postcss": "^8.5.6",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "tailwindcss": "^4.1.11"
+    "tailwindcss": "^4.1.11",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
+    "@types/node": "24.7.2",
+    "@types/react": "19.2.2",
     "prettier": "3.6.2",
-    "prettier-plugin-tailwindcss": "^0.6.14"
+    "prettier-plugin-tailwindcss": "^0.6.14",
+    "typescript": "5.9.3"
   }
 }
