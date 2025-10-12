@@ -1,9 +1,16 @@
-import { databases, users } from "@/models/server/config";
-import { UserPrefs } from "@/store/Auth";
+import { databases, users } from "../../../..//models/server/config";
+import { UserPrefs } from "../../../..//store/Auth";
 import React from "react";
-import { MagicCard, MagicContainer } from "@/components/magicui/magic-card";
-import NumberTicker from "@/components/magicui/number-ticker";
-import { answerCollection, db, questionCollection } from "@/models/name";
+import {
+  MagicCard,
+  MagicContainer,
+} from "../../../..//components/magicui/magic-card";
+import NumberTicker from "../../../..//components/magicui/number-ticker";
+import {
+  answerCollection,
+  db,
+  questionCollection,
+} from "../../../..//models/name";
 import { Query } from "node-appwrite";
 
 const Page = async ({

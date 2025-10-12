@@ -1,8 +1,8 @@
 "use client";
 
-import { databases } from "@/models/client/config";
-import { db, voteCollection } from "@/models/name";
-import { useAuthStore } from "@/store/Auth";
+import { databases } from "../models/client/config";
+import { db, voteCollection } from "../models/name";
+import { useAuthStore } from "../store/Auth";
 import { cn } from "@/lib/utils";
 import { IconCaretUpFilled, IconCaretDownFilled } from "@tabler/icons-react";
 import { ID, Models, Query } from "appwrite";
@@ -98,6 +98,7 @@ const VoteButtons = ({
     return (
         <div className={cn("flex shrink-0 flex-col items-center justify-start gap-y-4", className)}>
             <button
+                title="Upvote"
                 className={cn(
                     "flex h-10 w-10 items-center justify-center rounded-full border p-1 duration-200 hover:bg-white/10",
                     votedDocument && votedDocument.voteStatus === "upvoted"
@@ -110,6 +111,7 @@ const VoteButtons = ({
             </button>
             <span>{voteResult}</span>
             <button
+                title="Downvote"
                 className={cn(
                     "flex h-10 w-10 items-center justify-center rounded-full border p-1 duration-200 hover:bg-white/10",
                     votedDocument && votedDocument.voteStatus === "downvoted"

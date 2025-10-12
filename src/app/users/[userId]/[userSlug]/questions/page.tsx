@@ -1,13 +1,13 @@
-import Pagination from "@/components/Pagination";
-import QuestionCard from "@/components/QuestionCard";
+import Pagination from "../../../../../components/Pagination";
+import QuestionCard from "../../../../../components/QuestionCard";
 import {
   answerCollection,
   db,
   questionCollection,
   voteCollection,
-} from "@/models/name";
-import { databases, users } from "@/models/server/config";
-import { UserPrefs } from "@/store/Auth";
+} from "../../../../../models/name";
+import { databases, users } from "../../../../../models/server/config";
+import { UserPrefs } from "../../../../../store/Auth";
 import { Query } from "node-appwrite";
 import React from "react";
 

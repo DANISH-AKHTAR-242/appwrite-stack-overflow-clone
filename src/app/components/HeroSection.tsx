@@ -1,14 +1,14 @@
 import React from "react";
-import { HeroParallax } from "@/components/ui/hero-parallax";
-import { databases } from "@/models/server/config";
+import { HeroParallax } from "../../components/ui/hero-parallax";
+import { databases } from "../../models/server/config";
 import {
   db,
   questionAttachmentBucket,
   questionCollection,
-} from "@/models/name";
+} from "../../models/name";
 import { Query } from "node-appwrite";
-import slugify from "@/utils/slugify";
-import { storage } from "@/models/client/config";
+import slugify from "../../utils/slugify";
+import { storage } from "../../models/client/config";
 import HeroSectionHeader from "./HeroSectionHeader";
 
 export default async function HeroSection() {
@@ -26,7 +26,7 @@ export default async function HeroSection() {
         thumbnail: storage.getFilePreview(
           questionAttachmentBucket,
           q.attachmentId,
-        ).href,
+        ),
       }))}
     />
   );

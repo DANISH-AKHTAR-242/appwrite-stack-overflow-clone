@@ -1,17 +1,17 @@
-import { databases, users } from "@/models/server/config";
+import { databases, users } from "../../models/server/config";
 import {
   answerCollection,
   db,
   voteCollection,
   questionCollection,
-} from "@/models/name";
+} from "../../models/name";
 import { Query } from "node-appwrite";
 import React from "react";
 import Link from "next/link";
-import ShimmerButton from "@/components/magicui/shimmer-button";
-import QuestionCard from "@/components/QuestionCard";
-import { UserPrefs } from "@/store/Auth";
-import Pagination from "@/components/Pagination";
+import ShimmerButton from "../../components/magicui/shimmer-button";
+import QuestionCard from "../../components/QuestionCard";
+import { UserPrefs } from "../../store/Auth";
+import Pagination from "../../components/Pagination";
 import Search from "./Search";
 
 const Page = async ({

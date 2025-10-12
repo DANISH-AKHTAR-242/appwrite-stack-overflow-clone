@@ -15,6 +15,7 @@
     "@tailwindcss/postcss": "^4.1.11",
     "@uiw/react-md-editor": "^4.0.8",
     "appwrite": "^18.1.1",
+    "canvas-confetti": "^1.9.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cobe": "^0.6.5",
@@ -26,11 +27,13 @@
     "postcss": "^8.5.6",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-icon-cloud": "^4.1.7",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.11",
     "zustand": "^5.0.8"
   },
   "devDependencies": {
+    "@types/canvas-confetti": "^1.9.0",
     "@types/node": "24.7.2",
     "@types/react": "19.2.2",
     "prettier": "3.6.2",

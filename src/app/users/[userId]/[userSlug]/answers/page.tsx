@@ -1,8 +1,12 @@
-import Pagination from "@/components/Pagination";
-import { MarkdownPreview } from "@/components/RTE";
-import { answerCollection, db, questionCollection } from "@/models/name";
-import { databases } from "@/models/server/config";
-import slugify from "@/utils/slugify";
+import Pagination from "../../../../../components/Pagination";
+import { MarkdownPreview } from "../../../../../components/RTE";
+import {
+  answerCollection,
+  db,
+  questionCollection,
+} from "../../../../../models/name";
+import { databases } from "../../../../../models/server/config";
+import slugify from "../../../../../utils/slugify";
 import Link from "next/link";
 import { Query } from "node-appwrite";
 import React from "react";

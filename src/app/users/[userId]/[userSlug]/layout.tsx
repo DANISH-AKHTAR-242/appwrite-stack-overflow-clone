@@ -1,7 +1,7 @@
-import { avatars } from "@/models/client/config";
-import { users } from "@/models/server/config";
-import { UserPrefs } from "@/store/Auth";
-import convertDateToRelativeTime from "@/utils/relativeTime";
+import { avatars } from "../../../../models/client/config";
+import { users } from "../../../../models/server/config";
+import { UserPrefs } from "../../../../store/Auth";
+import convertDateToRelativeTime from "../../../../utils/relativeTime";
 import React from "react";
 import EditButton from "./EditButton";
 import Navbar from "./Navbar";
@@ -22,7 +22,7 @@ const Layout = async ({
         <div className="w-40 shrink-0">
           <picture className="block w-full">
             <img
-              src={avatars.getInitials(user.name, 200, 200).href}
+              src={avatars.getInitials(user.name, 200, 200)}
               alt={user.name}
               className="h-full w-full rounded-xl object-cover"
             />

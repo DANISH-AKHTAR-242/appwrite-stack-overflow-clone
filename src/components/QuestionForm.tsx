@@ -1,19 +1,19 @@
 "use client";
 
-import RTE from "@/components/RTE";
-import Meteors from "@/components/magicui/meteors";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useAuthStore } from "@/store/Auth";
+import RTE from "../components/RTE";
+import Meteors from "../components/magicui/meteors";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { useAuthStore } from "../store/Auth";
 import { cn } from "@/lib/utils";
-import slugify from "@/utils/slugify";
+import slugify from "../utils/slugify";
 import { IconX } from "@tabler/icons-react";
 import { Models, ID } from "appwrite";
 import { useRouter } from "next/navigation";
 import React from "react";
-import { databases, storage } from "@/models/client/config";
-import { db, questionAttachmentBucket, questionCollection } from "@/models/name";
-import { Confetti } from "@/components/magicui/confetti";
+import { databases, storage } from "../models/client/config";
+import { db, questionAttachmentBucket, questionCollection } from "../models/name";
+import { Confetti } from "../components/magicui/confetti";
 
 const LabelInputContainer = ({
     children,
@@ -278,6 +278,7 @@ const QuestionForm = ({ question }: { question?: Models.Document }) => {
                                             }));
                                         }}
                                         type="button"
+                                        title="Remove tag"
                                     >
                                         <IconX size={12} />
                                     </button>

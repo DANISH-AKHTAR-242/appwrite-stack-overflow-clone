@@ -1,13 +1,13 @@
-import Pagination from "@/components/Pagination";
+import Pagination from "../../../../../components/Pagination";
 import {
   answerCollection,
   db,
   questionCollection,
   voteCollection,
-} from "@/models/name";
-import { databases } from "@/models/server/config";
-import convertDateToRelativeTime from "@/utils/relativeTime";
-import slugify from "@/utils/slugify";
+} from "../../../../../models/name";
+import { databases } from "../../../../../models/server/config";
+import convertDateToRelativeTime from "../../../../../utils/relativeTime";
+import slugify from "../../../../../utils/slugify";
 import Link from "next/link";
 import { Query } from "node-appwrite";
 import React from "react";

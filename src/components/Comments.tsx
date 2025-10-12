@@ -1,11 +1,11 @@
 "use client";
 
-import { databases } from "@/models/client/config";
-import { commentCollection, db } from "@/models/name";
-import { useAuthStore } from "@/store/Auth";
+import { databases } from "../models/client/config";
+import { commentCollection, db } from "../models/name";
+import { useAuthStore } from "../store/Auth";
 import { cn } from "@/lib/utils"
-import convertDateToRelativeTime from "@/utils/relativeTime";
-import slugify from "@/utils/slugify";
+import convertDateToRelativeTime from "../utils/relativeTime";
+import slugify from "../utils/slugify";
 import { IconTrash } from "@tabler/icons-react";
 import { ID, Models } from "appwrite";
 import Link from "next/link";
@@ -83,6 +83,7 @@ const Comments = ({
                             <button
                                 onClick={() => deleteComment(comment.$id)}
                                 className="shrink-0 text-red-500 hover:text-red-600"
+                                title="Delete comment"
                             >
                                 <IconTrash className="h-4 w-4" />
                             </button>
