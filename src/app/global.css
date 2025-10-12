@@ -1,4 +1,7 @@
 @import "tailwindcss";
+
+
+/* @import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
@@ -18,10 +21,10 @@ summary::-webkit-details-marker {
     linear-gradient(90deg, #e6e6e690 1px, transparent 1px);
   background-size: 3.7em 3.7em;
   /* mask-image: radial-gradient(ellipse at 50% 40%, black 0%, transparent 55%); */
-  z-index: -1;
-  background-position-x: center;
-}
-
+  /* z-index: -1; */
+  /* background-position-x: center; */
+/* } */
+/* 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -136,4 +139,4 @@ summary::-webkit-details-marker {
   body {
     @apply bg-background text-foreground;
   }
-}
+/* } */  
