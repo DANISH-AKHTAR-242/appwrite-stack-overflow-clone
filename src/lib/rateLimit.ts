@@ -12,7 +12,7 @@ interface RateLimitEntry {
 const rateLimitStore = new Map<string, RateLimitEntry>();
 
 // Clean up old entries periodically
-setInterval(() => {
+const cleanupInterval = setInterval(() => {
   const now = Date.now();
   for (const [key, entry] of rateLimitStore.entries()) {
     if (entry.resetTime < now) {
@@ -20,6 +20,12 @@ setInterval(() => {
     }
   }
 }, 60000); // Clean every minute
+
+// Allow Node.js test runners to exit without waiting for this interval
+const intervalRef = cleanupInterval as NodeJS.Timeout;
+if (typeof intervalRef.unref === "function") {
+  intervalRef.unref();
+}
 
 export interface RateLimitConfig {
   /** Maximum number of requests allowed */

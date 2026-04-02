@@ -6,6 +6,9 @@ import getOrCreateStorage from "./models/server/storageSetup";
 
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
+  if (process.env.APPWRITE_MOCK === "true") {
+    return NextResponse.next();
+  }
   await Promise.all([getOrCreateDB(), getOrCreateStorage()]);
   return NextResponse.next();
 }
