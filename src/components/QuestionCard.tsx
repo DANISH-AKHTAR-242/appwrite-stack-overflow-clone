@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { memo, useRef, useState, useEffect, useMemo } from "react";
 import { BorderBeam } from "./magicui/border-beam";
 import Link from "next/link";
 import { Models } from "appwrite";
@@ -8,15 +8,27 @@ import slugify from "../utils/slugify";
 import { avatars } from "../models/client/config";
 import convertDateToRelativeTime from "../utils/relativeTime";
 
-const QuestionCard = ({ ques }: { ques: Models.Document }) => {
-    const [height, setHeight] = React.useState(0);
-    const ref = React.useRef<HTMLDivElement>(null);
+interface QuestionCardProps {
+    ques: Models.Document;
+}
 
-    React.useEffect(() => {
+const QuestionCard = memo(function QuestionCard({ ques }: QuestionCardProps) {
+    const [height, setHeight] = useState(0);
+    const ref = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
         if (ref.current) {
             setHeight(ref.current.clientHeight);
         }
-    }, [ref]);
+    }, []);
+
+    // Memoize expensive computations
+    const questionSlug = useMemo(() => slugify(ques.title), [ques.title]);
+    const authorSlug = useMemo(() => slugify(ques.author.name), [ques.author.name]);
+    const relativeTime = useMemo(
+        () => convertDateToRelativeTime(new Date(ques.$createdAt)),
+        [ques.$createdAt]
+    );
 
     return (
         <div
@@ -30,7 +42,7 @@ const QuestionCard = ({ ques }: { ques: Models.Document }) => {
             </div>
             <div className="relative w-full">
                 <Link
-                    href={`/questions/${ques.$id}/${slugify(ques.title)}`}
+                    href={`/questions/${ques.$id}/${questionSlug}`}
                     className="text-orange-500 duration-200 hover:text-orange-600"
                 >
                     <h2 className="text-xl">{ques.title}</h2>
@@ -54,18 +66,18 @@ const QuestionCard = ({ ques }: { ques: Models.Document }) => {
                             />
                         </picture>
                         <Link
-                            href={`/users/${ques.author.$id}/${slugify(ques.author.name)}`}
+                            href={`/users/${ques.author.$id}/${authorSlug}`}
                             className="text-orange-500 hover:text-orange-600"
                         >
                             {ques.author.name}
                         </Link>
                         <strong>&quot;{ques.author.reputation}&quot;</strong>
                     </div>
-                    <span>asked {convertDateToRelativeTime(new Date(ques.$createdAt))}</span>
+                    <span>asked {relativeTime}</span>
                 </div>
             </div>
         </div>
     );
-};
+});
 
 export default QuestionCard;

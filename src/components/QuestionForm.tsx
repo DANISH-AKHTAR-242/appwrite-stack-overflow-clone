@@ -41,7 +41,7 @@ const LabelInputContainer = ({
  * ******************************************************************************
  */
 const QuestionForm = ({ question }: { question?: Models.Document }) => {
-    const { user } = useAuthStore();
+    const { user, jwt } = useAuthStore();
     const [tag, setTag] = React.useState("");
     const router = useRouter();
 
@@ -87,28 +87,48 @@ const QuestionForm = ({ question }: { question?: Models.Document }) => {
     };
 
     const create = async () => {
+        if (!jwt) throw new Error("Please log in to ask a question");
         if (!formData.attachment) throw new Error("Please upload an image");
 
+        // Upload attachment first (still uses client SDK for file upload)
         const storageResponse = await storage.createFile(
             questionAttachmentBucket,
             ID.unique(),
             formData.attachment
         );
 
-        const response = await databases.createDocument(db, questionCollection, ID.unique(), {
-            title: formData.title,
-            content: formData.content,
-            authorId: formData.authorId,
-            tags: Array.from(formData.tags),
-            attachmentId: storageResponse.$id,
+        // Use API route for question creation with server-side validation
+        const response = await fetch("/api/question", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${jwt}`,
+            },
+            body: JSON.stringify({
+                title: formData.title,
+                content: formData.content,
+                tags: Array.from(formData.tags),
+                attachmentId: storageResponse.$id,
+            }),
         });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            // Clean up uploaded file if question creation fails
+            try {
+                await storage.deleteFile(questionAttachmentBucket, storageResponse.$id);
+            } catch {}
+            throw new Error(data.error || data.errors?.join(", ") || "Error creating question");
+        }
 
         loadConfetti();
 
-        return response;
+        return data;
     };
 
     const update = async () => {
+        if (!jwt) throw new Error("Please log in to update your question");
         if (!question) throw new Error("Please provide a question");
 
         const attachmentId = await (async () => {
@@ -125,23 +145,47 @@ const QuestionForm = ({ question }: { question?: Models.Document }) => {
             return file.$id;
         })();
 
-        const response = await databases.updateDocument(db, questionCollection, question.$id, {
-            title: formData.title,
-            content: formData.content,
-            authorId: formData.authorId,
-            tags: Array.from(formData.tags),
-            attachmentId: attachmentId,
+        // Use API route for question update with server-side validation
+        const response = await fetch("/api/question", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${jwt}`,
+            },
+            body: JSON.stringify({
+                questionId: question.$id,
+                title: formData.title,
+                content: formData.content,
+                tags: Array.from(formData.tags),
+                attachmentId: attachmentId,
+            }),
         });
 
-        return response;
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || data.errors?.join(", ") || "Error updating question");
+        }
+
+        return data;
     };
 
     const submit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        // didn't check for attachment because it's optional in updating
-        if (!formData.title || !formData.content || !formData.authorId) {
+        if (!user || !jwt) {
+            setError(() => "Please log in to continue");
+            return;
+        }
+
+        // Basic client-side validation (server will validate too)
+        if (!formData.title || !formData.content) {
             setError(() => "Please fill out all fields");
+            return;
+        }
+
+        if (formData.tags.size === 0) {
+            setError(() => "Please add at least one tag");
             return;
         }
 

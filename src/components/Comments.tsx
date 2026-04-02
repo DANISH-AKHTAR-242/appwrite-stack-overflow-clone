@@ -24,33 +24,70 @@ const Comments = ({
 }) => {
     const [comments, setComments] = React.useState(_comments);
     const [newComment, setNewComment] = React.useState("");
-    const { user } = useAuthStore();
+    const [loading, setLoading] = React.useState(false);
+    const { user, jwt } = useAuthStore();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (!newComment || !user) return;
+        if (!newComment || !user || !jwt) {
+            if (!user) window.alert("Please log in to comment");
+            return;
+        }
 
+        setLoading(true);
         try {
-            const response = await databases.createDocument(db, commentCollection, ID.unique(), {
-                content: newComment,
-                authorId: user.$id,
-                type: type,
-                typeId: typeId,
+            const response = await fetch("/api/comment", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${jwt}`,
+                },
+                body: JSON.stringify({
+                    content: newComment,
+                    type: type,
+                    typeId: typeId,
+                }),
             });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || data.errors?.join(", ") || "Error creating comment");
+            }
 
             setNewComment(() => "");
             setComments(prev => ({
                 total: prev.total + 1,
-                documents: [{ ...response, author: user }, ...prev.documents],
+                documents: [{ ...data, author: user }, ...prev.documents],
             }));
         } catch (error: any) {
             window.alert(error?.message || "Error creating comment");
+        } finally {
+            setLoading(false);
         }
     };
 
     const deleteComment = async (commentId: string) => {
+        if (!jwt) {
+            window.alert("Please log in to delete comments");
+            return;
+        }
+
         try {
-            await databases.deleteDocument(db, commentCollection, commentId);
+            const response = await fetch("/api/comment", {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${jwt}`,
+                },
+                body: JSON.stringify({ commentId }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || "Error deleting comment");
+            }
 
             setComments(prev => ({
                 total: prev.total - 1,
@@ -96,12 +133,16 @@ const Comments = ({
                 <textarea
                     className="w-full rounded-md border border-white/20 bg-white/10 p-2 outline-none"
                     rows={1}
-                    placeholder="Add a comment..."
+                    placeholder={user ? "Add a comment..." : "Log in to comment"}
                     value={newComment}
                     onChange={e => setNewComment(() => e.target.value)}
+                    disabled={!user || loading}
                 />
-                <button className="shrink-0 rounded bg-orange-500 px-4 py-2 font-bold text-white hover:bg-orange-600">
-                    Add Comment
+                <button 
+                    className="shrink-0 rounded bg-orange-500 px-4 py-2 font-bold text-white hover:bg-orange-600 disabled:opacity-50"
+                    disabled={!user || loading}
+                >
+                    {loading ? "..." : "Add Comment"}
                 </button>
             </form>
         </div>

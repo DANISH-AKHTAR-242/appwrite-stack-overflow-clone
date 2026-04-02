@@ -4,13 +4,12 @@ import { databases } from "./config";
 
 export default async function createAnswerCollection() {
   // Creating Collection
+  // Document security enabled - permissions set per document on creation
   await databases.createCollection(db, answerCollection, answerCollection, [
-    Permission.create("users"),
-    Permission.read("any"),
-    Permission.read("users"),
-    Permission.update("users"),
-    Permission.delete("users"),
-  ]);
+    Permission.create("users"),  // Only authenticated users can create
+    Permission.read("any"),      // Anyone can read answers
+    // Update and delete permissions are set per-document
+  ], true);  // Enable document security
   console.log("Answer Collection Created");
 
   // Creating Attributes
@@ -30,6 +29,19 @@ export default async function createAnswerCollection() {
       true,
     ),
     databases.createStringAttribute(db, answerCollection, "authorId", 50, true),
+    // Vote count for efficient sorting/display
+    databases.createIntegerAttribute(db, answerCollection, "voteCount", false, 0),
   ]);
   console.log("Answer Attributes Created");
+
+  // Index for sorting answers by votes
+  await databases.createIndex(
+    db,
+    answerCollection,
+    "voteCount_idx",
+    IndexType.Key,
+    ["voteCount"],
+    ["desc"],
+  );
+  console.log("Answer Index Created");
 }

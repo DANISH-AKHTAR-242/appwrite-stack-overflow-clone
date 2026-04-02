@@ -4,18 +4,17 @@ import { databases } from "./config";
 
 export default async function createQuestionCollection() {
   //create collection
+  // Document security enabled - permissions set per document on creation
   await databases.createCollection(
     db,
     questionCollection,
     questionCollection,
     [
-      Permission.read("any"),
-      Permission.read("users"),
-      Permission.create("users"),
-      Permission.update("users"),
-      Permission.delete("users"),
+      Permission.read("any"),  // Anyone can read questions
+      Permission.create("users"),  // Only authenticated users can create
+      // Update and delete permissions are set per-document
     ],
-    true, // Explicitly enable document security
+    true, // Enable document security - each document has its own permissions
   );
 
   console.log("Question collection created successfully.");
@@ -53,6 +52,10 @@ export default async function createQuestionCollection() {
       100,
       false,
     ),
+    // Vote counts for efficient sorting/display (updated on vote)
+    databases.createIntegerAttribute(db, questionCollection, "voteCount", false, 0),
+    // Answer count for "unanswered" filter
+    databases.createIntegerAttribute(db, questionCollection, "answerCount", false, 0),
   ]);
 
   console.log("Attributes created successfully.");
@@ -73,6 +76,24 @@ export default async function createQuestionCollection() {
       "content",
       IndexType.Fulltext,
       ["content"],
+      ["asc"],
+    ),
+    // Index for sorting by votes
+    databases.createIndex(
+      db,
+      questionCollection,
+      "voteCount_idx",
+      IndexType.Key,
+      ["voteCount"],
+      ["desc"],
+    ),
+    // Index for finding unanswered questions
+    databases.createIndex(
+      db,
+      questionCollection,
+      "answerCount_idx",
+      IndexType.Key,
+      ["answerCount"],
       ["asc"],
     ),
   ]);
