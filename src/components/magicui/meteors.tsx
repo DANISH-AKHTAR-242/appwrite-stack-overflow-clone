@@ -2,7 +2,6 @@
 
 import clsx from "clsx";
 import { useEffect, useState } from "react";
-import styles from "./meteors.module.css";
 
 interface MeteorsProps {
     number?: number;
@@ -25,9 +24,9 @@ export const Meteors = ({ number = 20 }: MeteorsProps) => {
             {[...meteorStyles].map((style, idx) => (
                 <span
                     className={clsx(
-                        styles.meteor,
                         "meteor pointer-events-none absolute left-1/2 top-1/2 h-0.5 w-0.5 rotate-[215deg] animate-meteor rounded-[9999px] bg-slate-500 shadow-[0_0_0_1px_#ffffff10]"
                     )}
+                    key={idx}
                     style={style}
                 >
                 

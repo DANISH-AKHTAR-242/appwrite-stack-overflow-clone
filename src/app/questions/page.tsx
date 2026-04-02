@@ -17,22 +17,24 @@ import Search from "./Search";
 const Page = async ({
   searchParams,
 }: {
-  searchParams: { page?: string; tag?: string; search?: string };
+  searchParams: Promise<{ page?: string; tag?: string; search?: string }>;
 }) => {
-  searchParams.page ||= "1";
+  const resolvedSearchParams = await searchParams;
+  const page = resolvedSearchParams.page || "1";
 
   const queries = [
     Query.orderDesc("$createdAt"),
-    Query.offset((+searchParams.page - 1) * 25),
+    Query.offset((+page - 1) * 25),
     Query.limit(25),
   ];
 
-  if (searchParams.tag) queries.push(Query.equal("tags", searchParams.tag));
-  if (searchParams.search)
+  if (resolvedSearchParams.tag)
+    queries.push(Query.equal("tags", resolvedSearchParams.tag));
+  if (resolvedSearchParams.search)
     queries.push(
       Query.or([
-        Query.search("title", searchParams.search),
-        Query.search("content", searchParams.search),
+        Query.search("title", resolvedSearchParams.search),
+        Query.search("content", resolvedSearchParams.search),
       ]),
     );
 
