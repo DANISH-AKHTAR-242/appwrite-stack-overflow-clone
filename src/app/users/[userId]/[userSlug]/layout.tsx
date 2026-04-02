@@ -12,9 +12,10 @@ const Layout = async ({
   params,
 }: {
   children: React.ReactNode;
-  params: { userId: string; userSlug: string };
+  params: Promise<{ userId: string; userSlug: string }>;
 }) => {
-  const user = await users.get<UserPrefs>(params.userId);
+  const { userId } = await params;
+  const user = await users.get<UserPrefs>(userId);
 
   return (
     <div className="container mx-auto space-y-4 px-4 pt-32 pb-20">
