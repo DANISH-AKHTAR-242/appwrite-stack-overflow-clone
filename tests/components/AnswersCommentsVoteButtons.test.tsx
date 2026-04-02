@@ -13,12 +13,6 @@ jest.mock('next/navigation', () => ({
 }));
 
 jest.mock('@/src/components/RTE', () => {
-  return function MockRTE({ value, onChange }: { value?: string; onChange: (value: string) => void }) {
-    return <textarea aria-label="Answer editor" value={value || ''} onChange={(e) => onChange(e.target.value)} />;
-  };
-});
-
-jest.mock('@/src/components/RTE', () => {
   const MockRTE = ({ value, onChange }: { value?: string; onChange: (value: string) => void }) => (
     <textarea aria-label="Answer editor" value={value || ''} onChange={(e) => onChange(e.target.value)} />
   );
@@ -91,6 +85,42 @@ describe('components: Answers, Comments, VoteButtons', () => {
     });
   });
 
+  it('answers form blocks unauthenticated submission', async () => {
+    useAuthStore.mockReturnValue({ user: null, jwt: null });
+    render(<Answers answers={{ total: 0, documents: [] } as any} questionId="q1" />);
+    expect(screen.getByRole('link', { name: /log in/i })).toBeInTheDocument();
+  });
+
+  it('answers form validates minimum content length', async () => {
+    useAuthStore.mockReturnValue({ user: { $id: 'u1', name: 'Test User' }, jwt: 'jwt' });
+    render(<Answers answers={{ total: 0, documents: [] } as any} questionId="q1" />);
+    await userEvent.type(screen.getByLabelText('Answer editor'), 'short');
+    await userEvent.click(screen.getByRole('button', { name: /Post Your Answer/i }));
+    expect(screen.getByText(/at least 10 characters/i)).toBeInTheDocument();
+  });
+
+  it('handles comment api failure', async () => {
+    useAuthStore.mockReturnValue({ user: { $id: 'u1', name: 'Test User' }, jwt: 'jwt' });
+    window.alert = jest.fn();
+    (global as any).fetch = jest.fn().mockResolvedValue({
+      ok: false,
+      json: async () => ({ error: 'Comment API failed' }),
+    });
+
+    render(
+      <Comments
+        comments={{ total: 0, documents: [] } as any}
+        type="question"
+        typeId="q1"
+      />
+    );
+
+    await userEvent.type(screen.getByPlaceholderText(/Add a comment/i), 'failing comment');
+    await userEvent.click(screen.getByRole('button', { name: /Add Comment/i }));
+
+    await waitFor(() => expect(window.alert).toHaveBeenCalledWith('Comment API failed'));
+  });
+
   it('vote button redirects unauthenticated user to login', async () => {
     useAuthStore.mockReturnValue({ user: null, jwt: null });
     render(<VoteButtons type="question" id="q1" initialVoteCount={2} />);
@@ -106,5 +136,19 @@ describe('components: Answers, Comments, VoteButtons', () => {
     await userEvent.click(screen.getByRole('button', { name: /Upvote/i }));
 
     await waitFor(() => expect(screen.getByText('3')).toBeInTheDocument());
+  });
+
+  it('vote button shows alert when api fails', async () => {
+    useAuthStore.mockReturnValue({ user: { $id: 'u1' }, jwt: 'jwt' });
+    window.alert = jest.fn();
+    (global as any).fetch = jest.fn().mockResolvedValue({
+      ok: false,
+      json: async () => ({ error: { message: 'Voting failed' } }),
+    });
+
+    render(<VoteButtons type="question" id="q1" initialVoteCount={2} />);
+    await userEvent.click(screen.getByRole('button', { name: /Upvote/i }));
+
+    await waitFor(() => expect(window.alert).toHaveBeenCalledWith('Voting failed'));
   });
 });

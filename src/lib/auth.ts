@@ -24,6 +24,24 @@ export interface AuthResult {
  */
 export async function verifyAuth(request: NextRequest): Promise<AuthResult> {
   try {
+    if (process.env.APPWRITE_MOCK === "true") {
+      const authHeader = request.headers.get("Authorization");
+      const jwt = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : request.cookies.get("jwt")?.value;
+
+      if (!jwt) {
+        return { success: false, error: "No authentication token provided" };
+      }
+
+      return {
+        success: true,
+        user: {
+          $id: "user-1",
+          name: "Test User",
+          email: "qa@example.com",
+        },
+      };
+    }
+
     // Get JWT from Authorization header or cookie
     const authHeader = request.headers.get("Authorization");
     const jwt = authHeader?.startsWith("Bearer ") 

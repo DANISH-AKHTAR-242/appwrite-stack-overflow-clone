@@ -1,11 +1,12 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const PORT = 3000;
+const PORT = Number(process.env.PLAYWRIGHT_PORT || 3000);
 const baseURL = `http://127.0.0.1:${PORT}`;
 
 export default defineConfig({
   testDir: './e2e',
-  fullyParallel: true,
+  fullyParallel: false,
+  workers: 1,
   retries: process.env.CI ? 2 : 0,
   reporter: 'list',
   use: {
@@ -14,7 +15,7 @@ export default defineConfig({
   },
   webServer: {
     command:
-      'NEXT_PUBLIC_APPWRITE_ENDPOINT=https://example.test/v1 NEXT_PUBLIC_APPWRITE_PROJECT_ID=test-project APPWRITE_API_KEY=test-api-key npm run dev',
+      'APPWRITE_MOCK=true NEXT_PUBLIC_APPWRITE_ENDPOINT=https://example.test/v1 NEXT_PUBLIC_APPWRITE_PROJECT_ID=test-project APPWRITE_API_KEY=test-api-key npm run dev',
     url: baseURL,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

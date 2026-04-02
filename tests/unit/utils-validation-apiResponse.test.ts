@@ -1,6 +1,8 @@
+/** @jest-environment node */
+
 import slugify from '@/src/utils/slugify';
 import convertDateToRelativeTime from '@/src/utils/relativeTime';
-import { validateQuestion, validateVote } from '@/src/lib/validation';
+import { validateAnswer, validateComment, validateQuestion, validateVote } from '@/src/lib/validation';
 import { errors, paginatedResponse, successResponse } from '@/src/lib/apiResponse';
 
 describe('unit: utilities, validation and api helpers', () => {
@@ -13,10 +15,28 @@ describe('unit: utilities, validation and api helpers', () => {
     expect(convertDateToRelativeTime(oneMinuteAgo)).toMatch(/minute/);
   });
 
+  it('relativeTime returns empty string for invalid date', () => {
+    expect(convertDateToRelativeTime(new Date('invalid date'))).toBe('');
+  });
+
   it('question validation rejects empty payload', () => {
     const result = validateQuestion({ title: '', content: '', tags: [] });
     expect(result.valid).toBe(false);
     expect(result.errors.length).toBeGreaterThan(0);
+  });
+
+  it('answer validation requires question id and minimum content', () => {
+    const result = validateAnswer({ content: 'short', questionId: '' });
+    expect(result.valid).toBe(false);
+    expect(result.errors).toEqual(
+      expect.arrayContaining(['Answer must be at least 10 characters', 'Question ID is required'])
+    );
+  });
+
+  it('comment validation rejects invalid type', () => {
+    const result = validateComment({ content: 'hello', type: 'post', typeId: '1' });
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain('Invalid comment type');
   });
 
   it('vote validation rejects invalid vote status', () => {
