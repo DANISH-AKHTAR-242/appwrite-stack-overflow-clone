@@ -4,13 +4,12 @@ import { databases } from "./config";
 
 export default async function createCommentCollection() {
   // Creating Collection
+  // Document security enabled - permissions set per document on creation
   await databases.createCollection(db, commentCollection, commentCollection, [
-    Permission.create("users"),
-    Permission.read("any"),
-    Permission.read("users"),
-    Permission.update("users"),
-    Permission.delete("users"),
-  ]);
+    Permission.create("users"),  // Only authenticated users can create
+    Permission.read("any"),      // Anyone can read comments
+    // Update and delete permissions are set per-document
+  ], true);  // Enable document security
   console.log("Comment Collection Created");
 
   // Creating Attributes
